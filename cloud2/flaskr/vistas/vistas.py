@@ -43,7 +43,7 @@ class VistaTareas(Resource):
     def __init__(self):
         self.tarea_schema = TareaSchema()
 
-    @jwt_required()
+    @jwt_required
     def post(self):
         ##RECUPERA EL USUARIO A PARTIR DE JWT
         current_user_id = get_jwt_identity()
@@ -62,7 +62,7 @@ class VistaTareas(Resource):
         os.system(str(cadena))
         return data, 200
 
-    @jwt_required()
+    @jwt_required
     def get(self):
         current_user_id = get_jwt_identity()
         print(current_user_id)
@@ -74,7 +74,7 @@ class VistaTarea(Resource):
     def __init__(self):
         self.tarea_schema = TareaSchema()
 
-    @jwt_required()
+    @jwt_required
     def put(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         tarea.newformat = request.json.get("newformat", tarea.newformat)
@@ -82,11 +82,11 @@ class VistaTarea(Resource):
         db.session.commit()
         return self.tarea_schema.dump(tarea)
 
-    @jwt_required()
+    @jwt_required
     def get(self, id_task):
         return TareaSchema().dump(Tarea.query.get_or_404(id_task))
 
-    @jwt_required()
+    @jwt_required
     def delete(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         db.session.delete(tarea)

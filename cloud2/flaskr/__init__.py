@@ -1,7 +1,7 @@
-from celery import Celery
 from flask import Flask
 
-celery = Celery(__name__, broker='redis://localhost:6379/0')
+
+# celery = Celery(__name__, broker='redis://localhost:6379/0')
 
 
 def create_app(config_name):
