@@ -1,12 +1,10 @@
 from flask_restful import Resource
-
+from sqlalchemy.exc import IntegrityError
 from ..modelos import db, Usuario, Tarea, TareaSchema
 from flask import request
-from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 import os
-# from celery import Celery
 
 
 class VistaRegistro(Resource):
@@ -14,12 +12,15 @@ class VistaRegistro(Resource):
         contrasena1 = request.json["password1"]
         contrasena2 = request.json["password2"]
         if contrasena1 == contrasena2:
-
-            nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
-                                    correo=request.json["email"])
-            db.session.add(nuevo_usuario)
-            db.session.commit()
-            return {"mensaje": "usuario creado exitosamente"}
+            try:
+                nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
+                                        correo=request.json["email"])
+                db.session.add(nuevo_usuario)
+                db.session.commit()
+                return {"mensaje": "usuario creado exitosamente"}
+            except IntegrityError:
+                db.session.rollback()
+                return {"El email ya existe"}
         else:
             return {"mensaje": "el usuario no se creo, clave no coincide"}
 
@@ -63,7 +64,6 @@ class VistaTareas(Resource):
 
     @jwt_required()
     def get(self):
-        ##RECUPERA EL USUARIO A PARTIR DE JWT
         current_user_id = get_jwt_identity()
         print(current_user_id)
 
