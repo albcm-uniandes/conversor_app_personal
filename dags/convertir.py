@@ -2,8 +2,7 @@ from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from conversor.conversor_executor import Conversor
-
+from conversor_executor import Conversor
 # These args will get passed on to the python operator
 default_args = {
     'owner': 'MISO_21',
