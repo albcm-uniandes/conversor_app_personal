@@ -1,1 +1,0 @@
-from conversor_operator import Conversor

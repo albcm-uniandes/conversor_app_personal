@@ -50,7 +50,7 @@ def pending_tasks() -> [Tarea]:
 def convert():
     tasks = pending_tasks()
     for t in tasks:
-        command = 'ffmpeg -i ' + str(t.file) + ' ' + str(t.new_format)
+        command = 'ffmpeg -i ' + str(t.file) + ' ' + str(t.newformat)
         try:
             os.system(command)
             print("Conversión realizada con exito")
