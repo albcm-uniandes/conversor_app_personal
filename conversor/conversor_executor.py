@@ -1,6 +1,11 @@
 import os
 from flaskr.modelos.modelos import db, Tarea
 
+import sys, os
+from airflow.models import Variable
+
+DAGBAGS_DIR = Variable.get('DAGBAGS_DIR')
+sys.path.append(DAGBAGS_DIR + '/conversor/')
 
 class Conversor:
 
