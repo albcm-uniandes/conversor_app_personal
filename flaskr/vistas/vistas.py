@@ -1,11 +1,14 @@
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
+
 from ..modelos import db, Usuario, Tarea, TareaSchema
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 import os
 from flask import send_from_directory
+
 
 class VistaRegistro(Resource):
     def post(self):
@@ -43,7 +46,6 @@ class VistaTareas(Resource):
     def __init__(self):
         self.tarea_schema = TareaSchema()
 
-    
     @jwt_required()
     def post(self):
         filename = subir_archivo()
@@ -51,7 +53,7 @@ class VistaTareas(Resource):
             current_user_id = get_jwt_identity()
             newformat = "wma"  ## TODO request.args.get('newformat')
             nueva_tarea = Tarea(filename=filename,
-                                newformat=newformat,
+                                new_format=newformat,
                                 usuario_id=current_user_id,
                                 timestamp=datetime.now(),
                                 status="UPLOADED")
@@ -59,21 +61,20 @@ class VistaTareas(Resource):
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
             # CONVERSIÓN LLAMANDO A CONSOLA
-            #cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
-            #os.system(str(cadena))
-        return data, 200
+            # cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
+            # os.system(str(cadena))
+            return data, 200
         else:
             data = {'estado': 'Archivo no subido, tarea no se creo'}
             return data, 404
 
-    
-    
-    @jwt_required
-    def get(self):
-        current_user_id = get_jwt_identity()
-        print(current_user_id)
 
-        return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
+@jwt_required
+def get(self):
+    current_user_id = get_jwt_identity()
+    print(current_user_id)
+
+    return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
 
 
 class VistaTarea(Resource):

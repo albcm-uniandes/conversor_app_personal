@@ -16,8 +16,8 @@ class Tarea(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
     filename = db.Column(db.String(128))
     new_format = db.Column(db.String(128))
-    status = db.Column(db.String(128))  ## UPLOADED - PROCESSED
-    timestamp = db.Column(db.Date)
+    status = db.Column(db.String(128))
+    timestamp = db.Column(db.DateTime)
 
 
 class UsuarioSchema(SQLAlchemyAutoSchema):
