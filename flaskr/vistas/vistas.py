@@ -5,7 +5,7 @@ from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 import os
-
+from flask import send_from_directory
 
 class VistaRegistro(Resource):
     def post(self):
@@ -43,25 +43,31 @@ class VistaTareas(Resource):
     def __init__(self):
         self.tarea_schema = TareaSchema()
 
-    @jwt_required
+    
+    @jwt_required()
     def post(self):
-        ##RECUPERA EL USUARIO A PARTIR DE JWT
-        current_user_id = get_jwt_identity()
-
-        nueva_tarea = Tarea(filename=request.json["filename"],
-                            newformat=request.json["newformat"],
-                            usuario_id=current_user_id,
-                            timestamp=datetime.now(),
-                            status="UPLOADED")
-        db.session.add(nueva_tarea)
-        db.session.commit()
-        data = {'estado': 'La tarea se creo'}
-
-        # CONVERSIÓN LLAMANDO A CONSOLA
-        cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
-        os.system(str(cadena))
+        filename = subir_archivo()
+        if filename != "404":
+            current_user_id = get_jwt_identity()
+            newformat = "wma"  ## TODO request.args.get('newformat')
+            nueva_tarea = Tarea(filename=filename,
+                                newformat=newformat,
+                                usuario_id=current_user_id,
+                                timestamp=datetime.now(),
+                                status="UPLOADED")
+            db.session.add(nueva_tarea)
+            db.session.commit()
+            data = {'estado': 'La tarea se creo'}
+            # CONVERSIÓN LLAMANDO A CONSOLA
+            #cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
+            #os.system(str(cadena))
         return data, 200
+        else:
+            data = {'estado': 'Archivo no subido, tarea no se creo'}
+            return data, 404
 
+    
+    
     @jwt_required
     def get(self):
         current_user_id = get_jwt_identity()
@@ -95,5 +101,20 @@ class VistaTarea(Resource):
 
 
 class VistaConversor(Resource):
+    ##descargar el archivo
     def get(self, filename):
-        return 200
+        working_directory = os.getcwd()
+        return send_from_directory(working_directory + "/archivos/", filename)
+
+
+def subir_archivo():
+    print("Funciona")
+    files = request.files.getlist("archivoup")
+    for file in files:
+        filename = secure_filename(file.filename)
+        try:
+            working_directory = os.getcwd()
+            file.save(working_directory + "/archivos/" + filename)
+        except FileNotFoundError:
+            return "404"
+    return filename
