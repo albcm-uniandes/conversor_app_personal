@@ -69,12 +69,12 @@ class VistaTareas(Resource):
             return data, 404
 
 
-@jwt_required
-def get(self):
-    current_user_id = get_jwt_identity()
-    print(current_user_id)
+    @jwt_required
+    def get(self):
+        current_user_id = get_jwt_identity()
+        print(current_user_id)
 
-    return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
+        return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
 
 
 class VistaTarea(Resource):
