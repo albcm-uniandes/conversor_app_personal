@@ -5,7 +5,7 @@ from flaskr.modelos.modelos import db, Tarea
 class Conversor:
 
     def pending_tasks(self) -> [Tarea]:
-        return db.session.query(Tarea).filter(Tarea.status == 2).all()
+        return db.session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
 
     def convert(self):
         tasks = self.pending_tasks()
