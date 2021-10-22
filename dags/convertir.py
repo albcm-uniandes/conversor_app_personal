@@ -22,9 +22,10 @@ dag = DAG(
     description='Process all upload files',
     schedule_interval='*/5 * * * *'
 )
+_ = Conversor()
 
 task = PythonOperator(
     task_id='print',
-    python_callable=Conversor.convert,
+    python_callable=_.convert,
     dag=dag,
 )
