@@ -1,5 +1,5 @@
 import os
-from cloud2.flaskr.modelos.modelos import db, Tarea
+from flaskr.modelos.modelos import db, Tarea
 
 
 class Conversor:

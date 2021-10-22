@@ -1,11 +1,10 @@
 from flask_restful import Resource
-
+from sqlalchemy.exc import IntegrityError
 from ..modelos import db, Usuario, Tarea, TareaSchema
 from flask import request
-from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
-from celery import Celery
+import os
 
 
 class VistaRegistro(Resource):
@@ -13,14 +12,18 @@ class VistaRegistro(Resource):
         contrasena1 = request.json["password1"]
         contrasena2 = request.json["password2"]
         if contrasena1 == contrasena2:
-
-            nuevo_usuario = Usuario(nombre=request.json["username"],contrasena = contrasena1,
-                                    correo=request.json["email"])
-            db.session.add(nuevo_usuario)
-            db.session.commit()
-            return {"mensaje": "usuario creado exitosamente"}
+            try:
+                nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
+                                        correo=request.json["email"])
+                db.session.add(nuevo_usuario)
+                db.session.commit()
+                return {"mensaje": "usuario creado exitosamente"}
+            except IntegrityError:
+                db.session.rollback()
+                return {"El email ya existe"}
         else:
-            return {"mensaje":"el usuario no se creo, clave no coincide"}
+            return {"mensaje": "el usuario no se creo, clave no coincide"}
+
 
 class VistaAutenticador(Resource):
     def post(self):
@@ -29,7 +32,7 @@ class VistaAutenticador(Resource):
         usuario = Usuario.query.filter_by(nombre=u_nombre, contrasena=u_contrasena).first()
         if usuario:
             token_de_acceso = create_access_token(identity=usuario.id)
-            data = {'estado': 'ok', 'token':token_de_acceso}
+            data = {'estado': 'ok', 'token': token_de_acceso}
             return data, 200
         else:
             data = {'estado': 'Nok'}
@@ -46,22 +49,26 @@ class VistaTareas(Resource):
         current_user_id = get_jwt_identity()
 
         nueva_tarea = Tarea(filename=request.json["filename"],
-                                newformat=request.json["newformat"],
-                                usuario_id=current_user_id,
-                                timestamp=datetime.now(),
-                                status="UPLOADED")
+                            newformat=request.json["newformat"],
+                            usuario_id=current_user_id,
+                            timestamp=datetime.now(),
+                            status="UPLOADED")
         db.session.add(nueva_tarea)
         db.session.commit()
         data = {'estado': 'La tarea se creo'}
+
+        # CONVERSIÓN LLAMANDO A CONSOLA
+        cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
+        os.system(str(cadena))
         return data, 200
 
     @jwt_required
     def get(self):
-        ##RECUPERA EL USUARIO A PARTIR DE JWT
         current_user_id = get_jwt_identity()
         print(current_user_id)
 
         return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
+
 
 class VistaTarea(Resource):
     def __init__(self):
@@ -76,7 +83,7 @@ class VistaTarea(Resource):
         return self.tarea_schema.dump(tarea)
 
     @jwt_required
-    def get(self,id_task):
+    def get(self, id_task):
         return TareaSchema().dump(Tarea.query.get_or_404(id_task))
 
     @jwt_required
@@ -87,9 +94,6 @@ class VistaTarea(Resource):
         return 200
 
 
-
 class VistaConversor(Resource):
-    ##descargar el archivo
     def get(self, filename):
         return 200
-
