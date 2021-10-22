@@ -1,9 +1,16 @@
 import os
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+
+from conversor import Conversor
+
+# engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
+# connection = engine.connect()
+# session = Session(bind=connection)  # create a Session
 
 # These args will get passed on to the python operator
 default_args = {
@@ -24,22 +31,9 @@ dag = DAG(
     schedule_interval='*/5 * * * *'
 )
 
+_ = Conversor()
 task = PythonOperator(
-    task_id='print',
-    python_callable=convert,
+    task_id='convert',
+    python_callable=_.convert,
     dag=dag,
 )
-
-# Operators
-def convert():
-    def pending_tasks():
-        pass
-    tasks = pending_tasks()
-    for task in tasks:
-        command = 'ffmpeg -i ' + str(task.file) + ' ' + str(task.new_format)
-        try:
-            os.system(command)
-            print("Conversión realizada con exito")
-        except Exception as e:
-            print(e)
-    print(f'{len(tasks)} Tareas ejecutadas')

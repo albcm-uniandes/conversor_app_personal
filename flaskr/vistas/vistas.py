@@ -53,7 +53,7 @@ class VistaTareas(Resource):
             current_user_id = get_jwt_identity()
             newformat = "wma"  ## TODO request.args.get('newformat')
             nueva_tarea = Tarea(filename=filename,
-                                new_format=newformat,
+                                newformat=newformat,
                                 usuario_id=current_user_id,
                                 timestamp=datetime.now(),
                                 status="UPLOADED")
