@@ -5,12 +5,11 @@ from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+from conversor_operator import Conversor
 
-from conversor import Conversor
-
-# engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
-# connection = engine.connect()
-# session = Session(bind=connection)  # create a Session
+#engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
+#connection = engine.connect()
+#session = Session(bind=connection)  # create a Session
 
 # These args will get passed on to the python operator
 default_args = {
