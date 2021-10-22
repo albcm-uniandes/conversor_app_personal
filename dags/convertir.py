@@ -1,8 +1,10 @@
+import os
+
 from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from conversor_executor import Conversor
+
 # These args will get passed on to the python operator
 default_args = {
     'owner': 'MISO_21',
@@ -21,10 +23,23 @@ dag = DAG(
     description='Process all upload files',
     schedule_interval='*/5 * * * *'
 )
-_ = Conversor()
 
 task = PythonOperator(
     task_id='print',
-    python_callable=_.convert,
+    python_callable=convert,
     dag=dag,
 )
+
+# Operators
+def convert():
+    def pending_tasks():
+        pass
+    tasks = pending_tasks()
+    for task in tasks:
+        command = 'ffmpeg -i ' + str(task.file) + ' ' + str(task.new_format)
+        try:
+            os.system(command)
+            print("Conversión realizada con exito")
+        except Exception as e:
+            print(e)
+    print(f'{len(tasks)} Tareas ejecutadas')

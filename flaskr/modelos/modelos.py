@@ -15,7 +15,7 @@ class Tarea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
     filename = db.Column(db.String(128))
-    new_format = db.Column(db.String(128))
+    newformat = db.Column(db.String(128))
     status = db.Column(db.String(128))
     timestamp = db.Column(db.DateTime)
 
