@@ -46,7 +46,7 @@ class VistaTareas(Resource):
     def __init__(self):
         self.tarea_schema = TareaSchema()
 
-    @jwt_required()
+    @jwt_required
     def post(self):
         filename = subir_archivo()
         if filename != "404":
