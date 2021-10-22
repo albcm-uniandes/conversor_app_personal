@@ -25,6 +25,6 @@ dag = DAG(
 
 task = PythonOperator(
     task_id='print',
-    python_callable=Conversor().convert(),
+    python_callable=Conversor.convert,
     dag=dag,
 )
