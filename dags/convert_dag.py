@@ -5,11 +5,11 @@ from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from conversor_operator import Conversor
+from modelos import Tarea
 
-#engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
-#connection = engine.connect()
-#session = Session(bind=connection)  # create a Session
+engine = create_engine(f'postgresql://user:password@hostname/dbname')
+connection = engine.connect()
+session = Session(bind=connection)  # create a Session
 
 # These args will get passed on to the python operator
 default_args = {
@@ -30,9 +30,25 @@ dag = DAG(
     schedule_interval='*/5 * * * *'
 )
 
-_ = Conversor()
+
+def pending_tasks() -> [Tarea]:
+    return session.session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
+
+
+def convert():
+    tasks = pending_tasks()
+    for t in tasks:
+        command = 'ffmpeg -i ' + str(t.file) + ' ' + str(t.new_format)
+        try:
+            os.system(command)
+            print("Conversión realizada con exito")
+        except Exception as e:
+            print(e)
+    print(f'{len(tasks)} Tareas ejecutadas')
+
+
 task = PythonOperator(
     task_id='convert',
-    python_callable=_.convert,
+    python_callable=convert,
     dag=dag,
 )
