@@ -1,5 +1,5 @@
 import os
-from flaskr.modelos.modelos import db, Tarea
+from modelos import db, Tarea
 
 
 class Conversor:
