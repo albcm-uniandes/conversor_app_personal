@@ -24,8 +24,8 @@ class Convert:
             print('test 3')
             for t in tasks:
                 command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
-                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(
-                    t.newformat)
+                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
+                print(command)
                 try:
                     os.system(command)
                     print("Conversión realizada con exito")
