@@ -16,7 +16,9 @@ class Convert:
         return session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
 
     def run(self):
+        print('test 1')
         tasks = self.pending_tasks()
+        print('test 2')
         if tasks:
             for t in tasks:
                 command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
