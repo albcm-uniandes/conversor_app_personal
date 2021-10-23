@@ -18,6 +18,7 @@ class Convert:
     def run(self):
         print('test 1')
         tasks = self.pending_tasks()
+        print(len(tasks))
         print('test 2')
         if tasks:
             for t in tasks:
