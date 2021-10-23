@@ -19,7 +19,9 @@ class Convert:
         tasks = self.pending_tasks()
         if tasks:
             for t in tasks:
-                command = 'ffmpeg -i ' + str(t.filename) + ' ' + t.filename[:-3] + str(t.newformat)
+                command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
+                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(
+                    t.newformat)
                 try:
                     os.system(command)
                     print("Conversión realizada con exito")
