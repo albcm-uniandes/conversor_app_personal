@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from flaskr.modelos import Tarea
 
-engine = create_engine(f'postgresql://user:password@hostname/dbname')
+engine = create_engine(f'postgresql://elusuario:12345@localhost:5432/conversordb')
 connection = engine.connect()
 session = Session(bind=connection)  # create a Session
 
