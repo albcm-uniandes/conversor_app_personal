@@ -1,18 +1,8 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from flask_sqlalchemy import SQLAlchemy
 from executors.convert_executor import Convert
-
-db = SQLAlchemy()
-
-# engine = create_engine(f'postgresql://user:password@hostname/dbname')
-# connection = engine.connect()
-# session = Session(bind=connection)  # create a Session
 
 
 # These args will get passed on to the python operator
