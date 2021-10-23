@@ -6,21 +6,12 @@ from datetime import timedelta
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from flask_sqlalchemy import SQLAlchemy
-
+from flaskr.modelos import Tarea
 db = SQLAlchemy()
 
-engine = create_engine(f'postgresql://user:password@hostname/dbname')
-connection = engine.connect()
-session = Session(bind=connection)  # create a Session
-
-
-class Tarea(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
-    filename = db.Column(db.String(128))
-    newformat = db.Column(db.String(128))
-    status = db.Column(db.String(128))
-    timestamp = db.Column(db.DateTime)
+# engine = create_engine(f'postgresql://user:password@hostname/dbname')
+#connection = engine.connect()
+#session = Session(bind=connection)  # create a Session
 
 
 # These args will get passed on to the python operator
@@ -44,7 +35,8 @@ dag = DAG(
 
 
 def pending_tasks() -> [Tarea]:
-    return session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
+    # return session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
+    pass
 
 
 def convert():
