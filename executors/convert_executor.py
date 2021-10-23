@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -27,7 +28,7 @@ class Convert:
                           ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
                 print(command)
                 try:
-                    os.system(command)
+                    subprocess.call(command)
                     print("Conversión realizada con exito")
                 except Exception as e:
                     print(e)
