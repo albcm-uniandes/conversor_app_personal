@@ -2,7 +2,7 @@ import subprocess
 import shlex
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-
+from O365 import Message, MSGraphProtocol
 from flaskr.modelos import Tarea, Usuario
 import smtplib
 
@@ -22,12 +22,13 @@ class Convert:
         if tasks:
             for t in tasks:
                 newfile = str(t.filename[:-3]) + str(t.newformat)
-                command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
-                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(
+                command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/archivos/' + str(t.filename) + \
+                          ' /home/estudiante/Proyecto-Grupo21-202120/archivos/' + t.filename[:-3] + str(
                     t.newformat)
                 try:
                     subprocess.Popen(command, shell=True)
                     self.enviarCorreo(t.usuario_id, newfile)
+                    print('TEST')
                     t.status = "PROCESSED"
                     session.commit()
                     print("Conversión realizada con exito")
@@ -40,47 +41,18 @@ class Convert:
     @staticmethod
     def enviarCorreo(usuario_id, nombreArchivo):
         usuario = session.query(Usuario).filter(Usuario.id == usuario_id).first()
-        ## DATOS CORREO
         user = "grupo21.conversor@outlook.com"
         password = "Grupo211357"
+        print('Flag')
+        o365_auth = (user,password)
+        m = Message(auth=o365_auth, protocol=MSGraphProtocol(), recipients=[usuario.correo])
+        m.setRecipients(usuario.correo)
+        m.setSubject('Archivo procesado\n')
+        m.setBody("Se ha procesado el archivo y se ha convertido al nuevo formato" + "http://172.23.66.31:8080/api/files/" + nombreArchivo)
+        m.sendMessage()
+        print('enviardo')
 
-        to = [usuario.correo]
-        print(to)
-        from_email = "CONVERSOR"
-        subject = "Archivo procesado\n"
-
-        ## MENSAJE
-        msg = ("Se ha procesado el archivo y se ha convertido al nuevo formato"
-               " descarguelo dando clic aqui "
-               "http://172.23.66.31:8080/api/files/" + nombreArchivo)
-
-        try:
-            for destination in to:
-                ## REALIZAR CONEXIÓN AL CORREO
-                print('Test1')
-                smtpserver = smtplib.SMTP("smtp.office365.com", 587)
-                print('Testt')
-                smtpserver.starttls()
-                print('Test')
-                smtpserver.login(user, password)
-                print('Test3')
-
-                ## REDACCIÓN DEL CORREO
-                ## CABECERA
-                header = "To:" + destination + "\n" + "From: " + from_email + "\n" + "Subject:" + subject + "\n"
-
-                ## MENSAJE
-                mail = header + msg
-                print("Este es el correo ", mail)
-
-                ## ENVIÓ
-                smtpserver.sendmail(user, destination, mail)
-                smtpserver.close()
-                return True
-
-        except Exception as e:
-            print("ERROR EN EL ENVIÓ DEL CORREO", e)
-            return False
+            
 
 
 if __name__ == "__main__":
