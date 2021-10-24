@@ -1,6 +1,7 @@
 from airflow import DAG
 from datetime import timedelta
 from airflow.operators.python import PythonOperator
+from airflow.operators.email_operator import EmailOperator
 from airflow.utils.dates import days_ago
 from executors.convert_executor import Convert
 from datetime import datetime
@@ -31,3 +32,5 @@ task = PythonOperator(
     python_callable=_.run,
     dag=dag,
 )
+
+task 
