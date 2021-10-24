@@ -86,11 +86,10 @@ class VistaTarea(Resource):
     def put(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         if tarea.status == "PROCESSED":
-         filename = tarea.filename[:-3] + tarea.newformat
-         borrar_archivo(filename) 
+            filename = tarea.filename[:-3] + tarea.newformat
+            borrar_archivo(filename)
         tarea.newformat = request.json.get("newformat", tarea.newformat)
         tarea.status = "UPLOADED"
-        # Todo: Eliminar el archivo
         db.session.commit()
         return self.tarea_schema.dump(tarea)
 
@@ -102,13 +101,12 @@ class VistaTarea(Resource):
     def delete(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         filename = tarea.filename[:-3] + tarea.newformat
-        print("Un textico antes ",filename)
-        borrar_archivo(tarea.filename)
-        borrar_archivo(filename)
-        db.session.delete(tarea)
-        # Todo: Validar estado
-        # Todo: Eliminar archivos
-        db.session.commit()
+        print("Un textico antes ", filename)
+        if tarea.status == 'PROCESSED':
+            borrar_archivo(tarea.filename)
+            borrar_archivo(filename)
+            db.session.delete(tarea)
+            db.session.commit()
         return 200
 
 
