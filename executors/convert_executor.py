@@ -27,9 +27,9 @@ class Convert:
                     t.newformat)
                 try:
                     subprocess.Popen(command, shell=True)
+                    self.enviarCorreo(t.usuario_id, newfile)
                     t.status = "PROCESSED"
                     session.commit()
-                    self.enviarCorreo(t.usuario_id, newfile)
                     print("Conversión realizada con exito")
                 except Exception as e:
                     print(e)

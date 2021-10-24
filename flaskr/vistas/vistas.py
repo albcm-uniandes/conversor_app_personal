@@ -133,6 +133,7 @@ def subir_archivo():
         filename = secure_filename(file.filename)
         try:
             working_directory = os.getcwd()
+            print(working_directory)
             file.save(working_directory + "/archivos/" + filename)
         except FileNotFoundError:
             return "404"

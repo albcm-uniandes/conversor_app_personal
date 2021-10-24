@@ -33,4 +33,10 @@ task = PythonOperator(
     dag=dag,
 )
 
-task 
+email = EmailOperator(
+        task_id='send_email',
+        to='machado.albeiro@gmail.com',
+        subject='Airflow Alert',
+        html_content=""" <h3>Email Test</h3> """,
+        dag=dag
+)
