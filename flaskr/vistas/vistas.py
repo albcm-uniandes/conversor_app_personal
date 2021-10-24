@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
-
+from sqlalchemy import desc, asc
 from ..modelos import db, Usuario, Tarea, TareaSchema
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
@@ -74,7 +74,16 @@ class VistaTareas(Resource):
     def get(self):
         current_user_id = get_jwt_identity()
         print(current_user_id)
-        # Todo: Filtros
+        if request.args.get('max', None):
+            return [self.tarea_schema.dump(ca) for ca in
+                    Tarea.query.filter_by(usuario_id=current_user_id).limit(max).all()]
+        if request.args.get('order', None):
+            if request.args.get('order', None) == 0:
+                return [self.tarea_schema.dump(ca) for ca in
+                        Tarea.query.filter_by(usuario_id=current_user_id).order_by(asc(Tarea.id)).all()]
+            else:
+                return [self.tarea_schema.dump(ca) for ca in
+                        Tarea.query.filter_by(usuario_id=current_user_id).order_by(desc(Tarea.id)).all()]
         return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
 
 
