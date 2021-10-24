@@ -82,4 +82,4 @@ class Convert:
 
 
 if __name__ == "__main__":
-    Convert.enviarCorreo(7, '')
+    Convert().enviarCorreo(7, '')
