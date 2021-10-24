@@ -14,6 +14,8 @@ class VistaRegistro(Resource):
     def post(self):
         contrasena1 = request.json["password1"]
         contrasena2 = request.json["password2"]
+        if !validar_clave(contrasena1):
+         return {"mensaje": "la contrasena no cumple con los parametros de seguridad [debe ser entre 8 y 20 caracteres, contener un caracter especial y una mayúscula]"}
         if contrasena1 == contrasena2:
             try:
                 nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
@@ -23,7 +25,7 @@ class VistaRegistro(Resource):
                 return {"mensaje": "usuario creado exitosamente"}
             except IntegrityError:
                 db.session.rollback()
-                return {"El email ya existe"}
+                return {"mensaje": "El email ya existe"}
         else:
             return {"mensaje": "el usuario no se creo, clave no coincide"}
 
@@ -48,10 +50,11 @@ class VistaTareas(Resource):
 
     @jwt_required
     def post(self):
-        filename = subir_archivo()
+        resultado = subir_archivo()
+        filename = resultado[0]
+        newformat = resultado[1] 
         if filename != "404":
             current_user_id = get_jwt_identity()
-            newformat = "wma"  ## TODO request.args.get('newformat')
             nueva_tarea = Tarea(filename=filename,
                                 newformat=newformat,
                                 usuario_id=current_user_id,
@@ -60,9 +63,6 @@ class VistaTareas(Resource):
             db.session.add(nueva_tarea)
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
-            # CONVERSIÓN LLAMANDO A CONSOLA
-            # cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
-            # os.system(str(cadena))
             return data, 200
         else:
             data = {'estado': 'Archivo no subido, tarea no se creo'}
@@ -84,6 +84,9 @@ class VistaTarea(Resource):
     @jwt_required
     def put(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
+        if tarea.status == "PROCESSED":
+         filename = tarea.filename[:-3] + tarea.new_format
+         borrar_archivo(filename) 
         tarea.newformat = request.json.get("newformat", tarea.newformat)
         tarea.status = "UPLOADED"
         db.session.commit()
@@ -96,6 +99,8 @@ class VistaTarea(Resource):
     @jwt_required
     def delete(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
+        filename = tarea.filename[:-3] + tarea.new_format
+        borrar_archivo(filename)
         db.session.delete(tarea)
         db.session.commit()
         return 200
@@ -109,8 +114,8 @@ class VistaConversor(Resource):
 
 
 def subir_archivo():
-    print("Funciona")
     files = request.files.getlist("archivoup")
+    newformat = request.form.get("newformat")
     for file in files:
         filename = secure_filename(file.filename)
         try:
@@ -118,4 +123,37 @@ def subir_archivo():
             file.save(working_directory + "/archivos/" + filename)
         except FileNotFoundError:
             return "404"
-    return filename
+    return filename, newformat
+
+def borrar_archivo(filename):
+    try:
+         working_directory = os.getcwd()
+         if path.exists(working_directory + "/archivos/" + filename):
+           remove(working_directory + "/archivos/" + filename)
+    except FileNotFoundError:
+            return "404"
+    return "200"
+
+def validar_clave(clave):
+      
+    specialChar =['$', '@', '#', '%']
+    val = True
+      
+    if len(clave) < 8:
+        val = False
+          
+    if len(clave) > 20:
+        val = False
+          
+    if not any(char.isdigit() for char in clave):
+        val = False
+    if not any(char.isupper() for char in clave):
+        val = False
+          
+    if not any(char.islower() for char in clave):
+        val = False
+          
+    if not any(char in specialChar for char in clave):
+        val = False
+    if val:
+        return val
