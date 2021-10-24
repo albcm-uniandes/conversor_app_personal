@@ -78,7 +78,7 @@ class VistaTareas(Resource):
             return [self.tarea_schema.dump(ca) for ca in
                     Tarea.query.filter_by(usuario_id=current_user_id).limit(max).all()]
         if request.args.get('order', None):
-            if request.args.get('order', None) == 0:
+            if request.args.get('order', None) == '0':
                 return [self.tarea_schema.dump(ca) for ca in
                         Tarea.query.filter_by(usuario_id=current_user_id).order_by(asc(Tarea.id)).all()]
             else:
