@@ -13,6 +13,7 @@ from flask import send_from_directory
 class VistaRegistro(Resource):
     def post(self):
         contrasena1 = request.json["password1"]
+        # Todo: seguridaf
         contrasena2 = request.json["password2"]
         if contrasena1 == contrasena2:
             try:
@@ -60,9 +61,6 @@ class VistaTareas(Resource):
             db.session.add(nueva_tarea)
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
-            # CONVERSIÓN LLAMANDO A CONSOLA
-            # cadena = "ffmpeg -i " + str(request.json["filename"]) + " " + str(request.json["newformat"])
-            # os.system(str(cadena))
             return data, 200
         else:
             data = {'estado': 'Archivo no subido, tarea no se creo'}
@@ -73,7 +71,7 @@ class VistaTareas(Resource):
     def get(self):
         current_user_id = get_jwt_identity()
         print(current_user_id)
-
+        # Todo: Filtros
         return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
 
 
@@ -86,6 +84,7 @@ class VistaTarea(Resource):
         tarea = Tarea.query.get_or_404(id_task)
         tarea.newformat = request.json.get("newformat", tarea.newformat)
         tarea.status = "UPLOADED"
+        # Todo: Eliminar el archivo
         db.session.commit()
         return self.tarea_schema.dump(tarea)
 
@@ -97,6 +96,8 @@ class VistaTarea(Resource):
     def delete(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         db.session.delete(tarea)
+        # Todo: Validar estado
+        # Todo: Eliminar archivos
         db.session.commit()
         return 200
 

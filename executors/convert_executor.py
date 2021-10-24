@@ -24,6 +24,8 @@ class Convert:
                           ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
                 try:
                     subprocess.Popen(command, shell=True)
+                    # Todo: cambiar status
+                    # Todo: Enviar email
                     print("Conversión realizada con exito")
                 except Exception as e:
                     print(e)
