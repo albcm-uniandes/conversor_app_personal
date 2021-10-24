@@ -8,14 +8,15 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 from datetime import datetime
 import os
 from flask import send_from_directory
+import smtplib
 
 
 class VistaRegistro(Resource):
     def post(self):
         contrasena1 = request.json["password1"]
         contrasena2 = request.json["password2"]
-        if !validar_clave(contrasena1):
-         return {"mensaje": "la contrasena no cumple con los parametros de seguridad [debe ser entre 8 y 20 caracteres, contener un caracter especial y una mayúscula]"}
+        if not(validar_clave(contrasena1)):
+         	return {"mensaje": "la contrasena no cumple con los parametros de seguridad [debe ser entre 8 y 20 caracteres, contener un caracter especial y una mayúscula]"}
         if contrasena1 == contrasena2:
             try:
                 nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
@@ -85,7 +86,7 @@ class VistaTarea(Resource):
     def put(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
         if tarea.status == "PROCESSED":
-         filename = tarea.filename[:-3] + tarea.new_format
+         filename = tarea.filename[:-3] + tarea.newformat
          borrar_archivo(filename) 
         tarea.newformat = request.json.get("newformat", tarea.newformat)
         tarea.status = "UPLOADED"
@@ -99,7 +100,9 @@ class VistaTarea(Resource):
     @jwt_required
     def delete(self, id_task):
         tarea = Tarea.query.get_or_404(id_task)
-        filename = tarea.filename[:-3] + tarea.new_format
+        filename = tarea.filename[:-3] + tarea.newformat
+        print("Un textico antes ",filename)
+        borrar_archivo(tarea.filename)
         borrar_archivo(filename)
         db.session.delete(tarea)
         db.session.commit()
@@ -127,9 +130,10 @@ def subir_archivo():
 
 def borrar_archivo(filename):
     try:
+         print(filename)
          working_directory = os.getcwd()
-         if path.exists(working_directory + "/archivos/" + filename):
-           remove(working_directory + "/archivos/" + filename)
+         if os.path.exists(working_directory + "/archivos/" + filename):
+        	 os.remove(working_directory + "/archivos/" + filename)
     except FileNotFoundError:
             return "404"
     return "200"
