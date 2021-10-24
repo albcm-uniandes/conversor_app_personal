@@ -59,12 +59,8 @@ class Convert:
                 ## REALIZAR CONEXIÓN AL CORREO
                 print('Test1')
                 smtpserver = smtplib.SMTP("smtp.office365.com", 587)
-                print('Test2')
-                smtpserver.ehlo()
                 print('Testt')
                 smtpserver.starttls()
-                print('Test232')
-                smtpserver.ehlo()
                 print('Test')
                 smtpserver.login(user, password)
                 print('Test3')
