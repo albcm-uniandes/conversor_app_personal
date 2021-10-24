@@ -17,18 +17,14 @@ class Convert:
         return session.query(Tarea).filter(Tarea.status == 'UPLOADED').all()
 
     def run(self):
-        print('test 1')
         tasks = self.pending_tasks()
         print(len(tasks))
-        print('test 2')
         if tasks:
-            print('test 3')
             for t in tasks:
                 command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
                           ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
-                print(command)
                 try:
-                    subprocess.call(command)
+                    subprocess.call(command, shell=True)
                     print("Conversión realizada con exito")
                 except Exception as e:
                     print(e)
