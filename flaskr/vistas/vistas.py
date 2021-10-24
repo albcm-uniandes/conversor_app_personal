@@ -15,8 +15,9 @@ class VistaRegistro(Resource):
     def post(self):
         contrasena1 = request.json["password1"]
         contrasena2 = request.json["password2"]
-        if not(validar_clave(contrasena1)):
-         	return {"mensaje": "la contrasena no cumple con los parametros de seguridad [debe ser entre 8 y 20 caracteres, contener un caracter especial y una mayúscula]"}
+        if validar_clave(contrasena1) is False:
+            return {
+                "mensaje": "la contrasena no cumple con los parametros de seguridad [debe ser entre 8 y 20 caracteres, contener un caracter especial y una mayúscula]"}
         if contrasena1 == contrasena2:
             try:
                 nuevo_usuario = Usuario(nombre=request.json["username"], contrasena=contrasena1,
@@ -53,7 +54,7 @@ class VistaTareas(Resource):
     def post(self):
         resultado = subir_archivo()
         filename = resultado[0]
-        newformat = resultado[1] 
+        newformat = resultado[1]
         if filename != "404":
             current_user_id = get_jwt_identity()
             nueva_tarea = Tarea(filename=filename,
@@ -69,12 +70,11 @@ class VistaTareas(Resource):
             data = {'estado': 'Archivo no subido, tarea no se creo'}
             return data, 404
 
-
     @jwt_required
     def get(self):
         current_user_id = get_jwt_identity()
         print(current_user_id)
-
+        # Todo: Filtros
         return [self.tarea_schema.dump(ca) for ca in Tarea.query.filter_by(usuario_id=current_user_id).all()]
 
 
@@ -90,6 +90,7 @@ class VistaTarea(Resource):
          borrar_archivo(filename) 
         tarea.newformat = request.json.get("newformat", tarea.newformat)
         tarea.status = "UPLOADED"
+        # Todo: Eliminar el archivo
         db.session.commit()
         return self.tarea_schema.dump(tarea)
 
@@ -105,6 +106,8 @@ class VistaTarea(Resource):
         borrar_archivo(tarea.filename)
         borrar_archivo(filename)
         db.session.delete(tarea)
+        # Todo: Validar estado
+        # Todo: Eliminar archivos
         db.session.commit()
         return 200
 
@@ -128,36 +131,35 @@ def subir_archivo():
             return "404"
     return filename, newformat
 
+
 def borrar_archivo(filename):
     try:
-         print(filename)
-         working_directory = os.getcwd()
-         if os.path.exists(working_directory + "/archivos/" + filename):
-        	 os.remove(working_directory + "/archivos/" + filename)
+        working_directory = os.getcwd()
+        if os.path.exists(working_directory + "/archivos/" + filename):
+            os.remove(working_directory + "/archivos/" + filename)
     except FileNotFoundError:
-            return "404"
-    return "200"
+        return None
+    return True
+
 
 def validar_clave(clave):
-      
-    specialChar =['$', '@', '#', '%']
+    specialChar = ['$', '@', '#', '%']
     val = True
-      
+
     if len(clave) < 8:
         val = False
-          
+
     if len(clave) > 20:
         val = False
-          
+
     if not any(char.isdigit() for char in clave):
         val = False
     if not any(char.isupper() for char in clave):
         val = False
-          
+
     if not any(char.islower() for char in clave):
         val = False
-          
+
     if not any(char in specialChar for char in clave):
         val = False
-    if val:
-        return val
+    return val

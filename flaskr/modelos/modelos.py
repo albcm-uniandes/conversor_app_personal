@@ -6,7 +6,7 @@ db = SQLAlchemy()
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(128))
+    nombre = db.Column(db.String(128), unique=True)
     contrasena = db.Column(db.String(128))
     correo = db.Column(db.String(128), unique=True)
 
