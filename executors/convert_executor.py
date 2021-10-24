@@ -1,6 +1,5 @@
-import os
 import subprocess
-
+import shlex
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -24,7 +23,7 @@ class Convert:
                 command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
                           ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
                 try:
-                    subprocess.call(command, shell=True)
+                    subprocess.call(shlex.split(command))
                     print("Conversión realizada con exito")
                 except Exception as e:
                     print(e)
