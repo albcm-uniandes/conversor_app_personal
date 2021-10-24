@@ -23,7 +23,8 @@ class Convert:
             for t in tasks:
                 newfile = str(t.filename[:-3]) + str(t.newformat)
                 command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + str(t.filename) + \
-                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(t.newformat)
+                          ' /home/estudiante/Proyecto-Grupo21-202120/flaskr/archivos/' + t.filename[:-3] + str(
+                    t.newformat)
                 try:
                     subprocess.Popen(command, shell=True)
                     t.status = "PROCESSED"
@@ -50,13 +51,13 @@ class Convert:
 
         ## MENSAJE
         msg = ("Se ha procesado el archivo y se ha convertido al nuevo formato"
-                " descarguelo dando clic aqui "
-                "http://172.23.66.31:8080/api/files/" + nombreArchivo)
+               " descarguelo dando clic aqui "
+               "http://172.23.66.31:8080/api/files/" + nombreArchivo)
 
         try:
             for destination in to:
                 ## REALIZAR CONEXIÓN AL CORREO
-                smtpserver = smtplib.SMTP("smtp.office365.com",587)
+                smtpserver = smtplib.SMTP("smtp.office365.com", 587)
                 smtpserver.ehlo()
                 smtpserver.starttls()
                 smtpserver.ehlo()
@@ -78,3 +79,7 @@ class Convert:
         except Exception as e:
             print("ERROR EN EL ENVIÓ DEL CORREO", e)
             return False
+
+
+if __name__ == "__main__":
+    Convert.enviarCorreo(7, '')
