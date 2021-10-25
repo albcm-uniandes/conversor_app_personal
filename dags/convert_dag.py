@@ -27,10 +27,21 @@ dag = DAG(
 
 _ = Convert()
 
+
 task = PythonOperator(
     task_id='convert',
     python_callable=_.run,
     dag=dag,
 )
 
-task
+emails = _.pending_emails()
+
+email = EmailOperator(
+        task_id='send_email',
+        to=emails,
+        subject='Alerta de convertidor',
+        html_content=""" Su archivo esta disponible para descargar """,
+        dag=dag
+)
+
+task >> email
