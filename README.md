@@ -3,8 +3,6 @@
 ## Descripción
 Aplicación web que permite subir abiertamente diferentes formatos de archivos de audio y poder cambiarles su formato. MP3 - ACC - OGG - WAV – WMA
 
-## Descripción tecnica
-
 ## Consideraciones para la ejecución en Maquina Virtual UNIANDES
 Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
