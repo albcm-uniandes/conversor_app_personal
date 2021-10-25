@@ -40,7 +40,7 @@ email = EmailOperator(
         task_id='send_email',
         to=emails,
         subject='Alerta de convertidor',
-        html_content=""" Su archivo esta disponible para descargar """,
+        html_content=""" Su archivo esta disponible para descargar descarguelo usando este formato http://172.23.66.31:8080/api/files/<<nombre_archivo>>.<<formato>> """,
         dag=dag
 )
 
