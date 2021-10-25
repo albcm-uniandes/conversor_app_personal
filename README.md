@@ -14,7 +14,7 @@ Para levantar los servicios requeridos ejecutrar los siguientes comandos
 ``airflow scheduler``
 
 ### Correr ngnix con servidor flask en producción
-``cd /Proyecto-Grupo21-202120``
+``cd /home/estudiante/Proyecto-Grupo21-202120``
 
 ``gunicorn --bind 0.0.0.0:8081 wsgi:app &``
 
