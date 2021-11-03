@@ -44,4 +44,4 @@ class Convert:
                     print(e)
             print(f'{len(tasks)} Tareas ejecutadas')
         else:
-            print(f'No hay tareas por hacer')
+            raise Exception('No hay tareas por hacer!')
