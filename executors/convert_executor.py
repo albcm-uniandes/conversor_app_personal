@@ -8,6 +8,7 @@ hostname = os.environ['RDS_HOST']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
 dbname = os.environ['RDS_DATABASE']
+folder = os.environ['PROCESS_FOLDER']
 
 engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
@@ -32,9 +33,8 @@ class Convert:
         print(len(tasks))
         if tasks:
             for t in tasks:
-                command = 'ffmpeg -i /home/estudiante/Proyecto-Grupo21-202120/archivos/' + str(t.filename) + \
-                          ' /home/estudiante/Proyecto-Grupo21-202120/archivos/' + t.filename[:-3] + str(
-                    t.newformat)
+                command = f'ffmpeg -i {folder}' + str(t.filename) + \
+                          f' {folder}' + t.filename[:-3] + str(t.newformat)
                 try:
                     subprocess.Popen(command, shell=True)
                     t.status = "PROCESSED"
