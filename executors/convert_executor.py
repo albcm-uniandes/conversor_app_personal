@@ -4,11 +4,12 @@ from sqlalchemy.orm import Session
 from flaskr.modelos.modelos import Tarea, Usuario
 import os
 
-engine = create_engine(
-    f'postgresql://{os.environ["RDS_USERNAME"]}:'
-    f'{os.environ["RDS_PASSWORD"]}@{os.environ["RDS_HOST"]}'
-    f':{os.environ["RDS_PORT"]}/'
-    f'{os.environ["RDS_DATABASE"]}')
+hostname = os.environ['RDS_HOST']
+user = os.environ['RDS_USERNAME']
+password = os.environ['RDS_PASSWORD']
+dbname = os.environ['RDS_DATABASE']
+
+engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
 session = Session(bind=connection)  # create a Session
 
