@@ -122,8 +122,8 @@ class VistaTarea(Resource):
 class VistaConversor(Resource):
     ##descargar el archivo
     def get(self, filename):
-        working_directory = os.getcwd()
-        return send_from_directory(working_directory + "/archivos/", filename)
+        working_directory = os.environ['PROCESS_FOLDER']
+        return send_from_directory(working_directory, filename)
 
 
 def subir_archivo():
@@ -142,9 +142,9 @@ def subir_archivo():
 
 def borrar_archivo(filename):
     try:
-        working_directory = os.getcwd()
-        if os.path.exists(working_directory + "/archivos/" + filename):
-            os.remove(working_directory + "/archivos/" + filename)
+        working_directory = os.environ['PROCESS_FOLDER']
+        if os.path.exists(working_directory + filename):
+            os.remove(working_directory + filename)
     except FileNotFoundError:
         return None
     return True
