@@ -129,12 +129,12 @@ class VistaConversor(Resource):
 def subir_archivo():
     files = request.files.getlist("archivoup")
     newformat = request.form.get("newformat")
+    folder = os.environ['PROCESS_FOLDER']
     for file in files:
         filename = secure_filename(file.filename)
         try:
-            working_directory = os.getcwd()
-            print(working_directory)
-            file.save(working_directory + "/archivos/" + filename)
+            print(folder)
+            file.save(folder + filename)
         except FileNotFoundError:
             return "404"
     return filename, newformat
