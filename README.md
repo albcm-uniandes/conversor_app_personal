@@ -6,6 +6,13 @@ Aplicación web que permite subir abiertamente diferentes formatos de archivos d
 ## Consideraciones para la ejecución en AWS
 Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
+### Servicios 
+#### EC2
+![image](https://user-images.githubusercontent.com/78766013/140675012-0fdc2c6f-1b46-4ae8-9174-bd2491c78633.png)
+#### RDS
+![image](https://user-images.githubusercontent.com/78766013/140675025-0768c880-3ffa-4792-b820-d96eaf16cf8c.png)
+
+
 ### Correr airflow en instancia WORKER
 ``airflow scheduler``
 
