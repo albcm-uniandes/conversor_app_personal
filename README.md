@@ -30,6 +30,7 @@ Para levantar los servicios requeridos ejecutrar los siguientes comandos
 ### Otras
 - Utilizar las variables de entorno necesaria para la aplicación, para ello guiarse del archivo .env.example que se encuentra en raiz del proyecto
 - El orden de iniciación para la solución debe empezar con el levantamiento de los servicios en la RDS, verificar estado de FILE SERVER, iniciar WEB SERVER con los comando anteriormente mencionaos y por ultimo inicializar el worker de airflow en instancia WORKER
+- Al ejecutar las pruebas de carga, actualice la ip del servidor web del archivo que usa Jmeter para correr.
 
 
 ## Consideraciones para la ejecución en Maquina Virtual UNIANDES
