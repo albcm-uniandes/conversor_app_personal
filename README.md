@@ -14,9 +14,11 @@ Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
 ``gunicorn --bind 0.0.0.0:8081 wsgi:app &``
 
-### Otras
+### Consideraciones NFS
+- La carpeta compartida se encuentra en la ruta ``/mnt/archivos``, esta misma ruta la tienen todos los clientes
 - Verificar que el servicio del server NFS este habilitado, instancia FILE SERVER, en caso que no ejecutar en esta instancia ``sudo systemctl restart nfs-kernel-server``
 
+### Otras
 - Utilizar las variables de entorno necesaria para la aplicación, para ello guiarse del archivo .env.example que se encuentra en raiz del proyecto
 - El orden de iniciación para la solución debe empezar con el levantamiento de los servicios en la RDS, verificar estado de FILE SERVER, iniciar WEB SERVER con los comando anteriormente mencionaos y por ultimo inicializar el worker de airflow en instancia WORKER
 
