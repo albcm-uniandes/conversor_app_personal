@@ -7,6 +7,8 @@ Aplicación web que permite subir abiertamente diferentes formatos de archivos d
 Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
 ### Servicios 
+#### Infraestructura y arquitectura 
+![Web App Reference Architecture](https://user-images.githubusercontent.com/78766013/140675371-1f702162-c805-4f1e-a4c5-76b49d11ce89.png)
 #### EC2
 ![image](https://user-images.githubusercontent.com/78766013/140675012-0fdc2c6f-1b46-4ae8-9174-bd2491c78633.png)
 #### RDS
