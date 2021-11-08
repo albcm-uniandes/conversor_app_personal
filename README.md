@@ -3,6 +3,23 @@
 ## Descripción
 Aplicación web que permite subir abiertamente diferentes formatos de archivos de audio y poder cambiarles su formato. MP3 - ACC - OGG - WAV – WMA
 
+## Consideraciones para la ejecución en AWS
+Para levantar los servicios requeridos ejecutrar los siguientes comandos
+
+### Correr airflow en instancia WORKER
+``airflow scheduler``
+
+### Correr ngnix con servidor flask en producción instancia WEB SERVER
+``cd /home/ubuntu/Proyecto-Grupo21-202120``
+
+``gunicorn --bind 0.0.0.0:8081 wsgi:app &``
+
+### Otras
+- Verificar que el servicio del server NFS este habilitado, instancia FILE SERVER
+- Utilizar las variables de entorno necesaria para la aplicación, para ello guiarse del archivo .env.example que se encuentra en raiz del proyecto
+- El orden de iniciación para la solución debe empezar con el levantamiento de los servicios en la RDS, verificar estado de FILE SERVER, iniciar WEB SERVER con los comando anteriormente mencionaos y por ultimo inicializar el worker de airflow en instancia WORKER
+
+
 ## Consideraciones para la ejecución en Maquina Virtual UNIANDES
 Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
