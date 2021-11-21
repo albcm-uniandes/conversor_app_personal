@@ -9,10 +9,10 @@ from flask import request, redirect
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 import os
-from flask import send_from_directory
 import boto3
 
 s3 = boto3.resource("s3")
+_s3 = boto3.client('s3')
 bucket = os.environ['BUCKET']
 
 
@@ -131,12 +131,11 @@ class VistaConversor(Resource):
 
 
 def subir_archivo():
-    file = request.files.getlist("archivoup")[0]
+    file = request.files.get("archivoup")
     newformat = request.form.get("newformat")
     filename = secure_filename(file.filename)
     try:
-        with open(filename, 'rb') as data:
-            s3.upload_fileobj(data, bucket, filename)
+        _s3.put_object(Body=file, Bucket=bucket, Key=filename)
     except Exception as e:
         print(e)
     return filename, newformat
