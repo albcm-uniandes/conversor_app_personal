@@ -143,7 +143,8 @@ def subir_archivo():
 
 def borrar_archivo(filename):
     try:
-        s3.Object(bucket, filename).delete()
+
+        _s3.delete_object(bucket, filename)
     except Exception as e:
         print(e)
     return True
