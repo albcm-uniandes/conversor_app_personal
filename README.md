@@ -3,6 +3,36 @@
 ## Descripción
 Aplicación web que permite subir abiertamente diferentes formatos de archivos de audio y poder cambiarles su formato. MP3 - ACC - OGG - WAV – WMA
 
+## Consideraciones para la ejecución en AWS
+Para levantar los servicios requeridos ejecutrar los siguientes comandos
+
+### Servicios 
+#### Infraestructura y arquitectura 
+![Web App Reference Architecture](https://user-images.githubusercontent.com/78766013/140675371-1f702162-c805-4f1e-a4c5-76b49d11ce89.png)
+#### EC2
+![image](https://user-images.githubusercontent.com/78766013/140675012-0fdc2c6f-1b46-4ae8-9174-bd2491c78633.png)
+#### RDS
+![image](https://user-images.githubusercontent.com/78766013/140675025-0768c880-3ffa-4792-b820-d96eaf16cf8c.png)
+
+
+### Correr airflow en instancia WORKER
+``airflow scheduler``
+
+### Correr ngnix con servidor flask en producción instancia WEB SERVER
+``cd /home/ubuntu/Proyecto-Grupo21-202120``
+
+``gunicorn --bind 0.0.0.0:8081 wsgi:app &``
+
+### Consideraciones NFS
+- La carpeta compartida se encuentra en la ruta ``/mnt/archivos``, esta misma ruta la tienen todos los clientes
+- Verificar que el servicio del server NFS este habilitado, instancia FILE SERVER, en caso que no ejecutar en esta instancia ``sudo systemctl restart nfs-kernel-server``
+
+### Otras
+- Utilizar las variables de entorno necesaria para la aplicación, para ello guiarse del archivo .env.example que se encuentra en raiz del proyecto
+- El orden de iniciación para la solución debe empezar con el levantamiento de los servicios en la RDS, verificar estado de FILE SERVER, iniciar WEB SERVER con los comando anteriormente mencionaos y por ultimo inicializar el worker de airflow en instancia WORKER
+- Al ejecutar las pruebas de carga, actualice la ip del servidor web del archivo que usa Jmeter para correr.
+
+
 ## Consideraciones para la ejecución en Maquina Virtual UNIANDES
 Para levantar los servicios requeridos ejecutrar los siguientes comandos
 
