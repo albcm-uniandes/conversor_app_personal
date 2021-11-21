@@ -1,4 +1,6 @@
 import subprocess
+
+import boto3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from flaskr.modelos.modelos import Tarea, Usuario
@@ -9,6 +11,8 @@ user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
 dbname = os.environ['RDS_DATABASE']
 folder = os.environ['PROCESS_FOLDER']
+bucket = os.environ['BUCKET']
+s3 = boto3.resource("s3")
 
 engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
@@ -36,7 +40,14 @@ class Convert:
                 command = f'ffmpeg -i {folder}' + str(t.filename) + \
                           f' {folder}' + t.filename[:-3] + str(t.newformat)
                 try:
+                    s3.download_file(bucket, t.filename, t.filename)
                     subprocess.Popen(command, shell=True)
+                    s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
+                                      f'{folder}{t.filename[:-3]}{str(t.newformat)}')
+                    if os.path.exists(folder + t.filename) and os.path.exists(
+                            f'{folder}{t.filename[:-3]}{str(t.newformat)}'):
+                        os.remove(folder + t.filename)
+                        os.remove(f'{folder}{t.filename[:-3]}{str(t.newformat)}')
                     t.status = "PROCESSED"
                     session.commit()
                     print("Conversión realizada con exito")

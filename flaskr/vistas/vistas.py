@@ -1,14 +1,19 @@
+import io
+
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from sqlalchemy import desc, asc
 from ..modelos import db, Usuario, Tarea, TareaSchema
-from flask import request
+from flask import request, redirect
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 import os
 from flask import send_from_directory
-import smtplib
+import boto3
+
+s3 = boto3.resource("s3")
+bucket = os.environ['BUCKET']
 
 
 class VistaRegistro(Resource):
@@ -122,31 +127,26 @@ class VistaTarea(Resource):
 class VistaConversor(Resource):
     ##descargar el archivo
     def get(self, filename):
-        working_directory = os.environ['PROCESS_FOLDER']
-        return send_from_directory(working_directory, filename)
+        return redirect(f'https://{bucket}.s3.amazonaws.com/{filename}', code=302)
 
 
 def subir_archivo():
-    files = request.files.getlist("archivoup")
+    file = request.files.getlist("archivoup")[0]
     newformat = request.form.get("newformat")
-    folder = os.environ['PROCESS_FOLDER']
-    for file in files:
-        filename = secure_filename(file.filename)
-        try:
-            print(folder)
-            file.save(folder + filename)
-        except FileNotFoundError:
-            return "404"
+    filename = secure_filename(file.filename)
+    try:
+        with open(filename, 'rb') as data:
+            s3.upload_fileobj(data, bucket, filename)
+    except Exception as e:
+        print(e)
     return filename, newformat
 
 
 def borrar_archivo(filename):
     try:
-        working_directory = os.environ['PROCESS_FOLDER']
-        if os.path.exists(working_directory + filename):
-            os.remove(working_directory + filename)
-    except FileNotFoundError:
-        return None
+        s3.Object(bucket, filename).delete()
+    except Exception as e:
+        print(e)
     return True
 
 
