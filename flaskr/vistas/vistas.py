@@ -116,7 +116,7 @@ class VistaTarea(Resource):
         tarea = Tarea.query.get_or_404(id_task)
         filename = tarea.filename[:-3] + tarea.newformat
         print("Un textico antes ", filename)
-        if tarea.status == 'PROCESSED':
+        if tarea.status == 'UPLOADED':
             borrar_archivo(tarea.filename)
             borrar_archivo(filename)
             db.session.delete(tarea)
@@ -143,8 +143,7 @@ def subir_archivo():
 
 def borrar_archivo(filename):
     try:
-
-        _s3.delete_object(bucket, filename)
+        _s3.delete_object(Bucket=bucket, Key=filename)
     except Exception as e:
         print(e)
     return True
