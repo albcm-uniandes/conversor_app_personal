@@ -2,9 +2,10 @@ import subprocess
 import boto3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from flaskr.modelos.modelos import Tarea, Usuario
 import os
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 hostname = os.environ['RDS_HOST']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
@@ -16,6 +17,15 @@ sqs = boto3.resource('sqs')
 engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
 session = Session(bind=connection)  # create a Session
+
+
+class Tarea(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
+    filename = db.Column(db.String(128))
+    newformat = db.Column(db.String(128))
+    status = db.Column(db.String(128))
+    timestamp = db.Column(db.DateTime)
 
 
 class ConvertBySQS:
