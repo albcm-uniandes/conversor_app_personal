@@ -4,6 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import os
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db = SQLAlchemy()
 hostname = os.environ['RDS_HOST']
