@@ -32,7 +32,6 @@ class Tarea(db.Model):
 
 
 class ConvertBySQS:
-    @staticmethod
     def get_task(id) -> [Tarea]:
         return session.query(Tarea).filter(Tarea.id == id).first()
 
@@ -41,25 +40,25 @@ class ConvertBySQS:
             messages = sqs.receive_message(QueueUrl=os.environ.get('QUEUE_URL'))
             print(messages)
             if messages:
-              for msg in messages['Messages']:
-                  print(msg)
-                  msg_body = msg['Body']
-                  task_id = int(msg_body)
-                  t = self.get_task(task_id)
-                  print(f'The message body: {msg_body}')
-                  command = f'ffmpeg -i {folder}' + str(t.filename) + \
-                            f' {folder}' + t.filename[:-3] + str(t.newformat)
-                  try:
-                      s3.download_file(bucket, t.filename, t.filename)
-                      subprocess.Popen(command, shell=True)
-                      s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
-                                        f'{folder}{t.filename[:-3]}{str(t.newformat)}')
-                      if os.path.exists(folder + t.filename) and os.path.exists(
-                              f'{folder}{t.filename[:-3]}{str(t.newformat)}'):
-                          os.remove(folder + t.filename)
-                          os.remove(f'{folder}{t.filename[:-3]}{str(t.newformat)}')
-                      t.status = "PROCESSED"
-                      session.commit()
-                      print("Conversión realizada con exito")
-                  except Exception as e:
-                      continue
+                for msg in messages['Messages']:
+                    print(msg)
+                    msg_body = msg['Body']
+                    task_id = int(msg_body)
+                    t = get_task(task_id)
+                    print(f'The message body: {msg_body}')
+                    command = f'ffmpeg -i {folder}' + str(t.filename) + \
+                              f' {folder}' + t.filename[:-3] + str(t.newformat)
+                    try:
+                        s3.download_file(bucket, t.filename, t.filename)
+                        subprocess.Popen(command, shell=True)
+                        s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
+                                          f'{folder}{t.filename[:-3]}{str(t.newformat)}')
+                        if os.path.exists(folder + t.filename) and os.path.exists(
+                                f'{folder}{t.filename[:-3]}{str(t.newformat)}'):
+                            os.remove(folder + t.filename)
+                            os.remove(f'{folder}{t.filename[:-3]}{str(t.newformat)}')
+                        t.status = "PROCESSED"
+                        session.commit()
+                        print("Conversión realizada con exito")
+                    except Exception as e:
+                        continue
