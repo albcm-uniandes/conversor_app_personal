@@ -1,4 +1,4 @@
-import io
+import json
 
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -10,10 +10,21 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 from datetime import datetime
 import os
 import boto3
+import logging
+from botocore.exceptions import ClientError
 
 s3 = boto3.resource("s3")
 _s3 = boto3.client('s3')
 bucket = os.environ['BUCKET']
+# Get the service resource
+sqs = boto3.resource('sqs')
+# logger config
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s: %(levelname)s: %(message)s')
+
+# Get the queue
+queue = sqs.get_queue_by_name(QueueName='ColaFIFO.fifo')
 
 
 class VistaRegistro(Resource):
@@ -70,6 +81,10 @@ class VistaTareas(Resource):
             db.session.add(nueva_tarea)
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
+            sqs.send_message(QueueUrl=os.environ.get('QUEUE_URL'),
+                             MessageBody=str(nueva_tarea.id))
+
+            logger.info('Message sent')
             return data, 200
         else:
             data = {'estado': 'Archivo no subido, tarea no se creo'}
