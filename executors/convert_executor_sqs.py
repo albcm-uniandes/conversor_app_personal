@@ -48,11 +48,14 @@ class ConvertBySQS:
                     msg_body = msg['Body']
                     task_id = int(msg_body)
                     t = get_task(task_id)
+                    print(t)
                     print(f'The message body: {msg_body}')
-                    command = f'ffmpeg -i {folder}' + str(t.filename) + \
-                              f' {folder}' + t.filename[:-3] + str(t.newformat)
                     try:
+                        print(t.filename)
+                        command = f'ffmpeg -i {folder}' + str(t.filename) + \
+                              f' {folder}' + t.filename[:-3] + str(t.newformat)
                         s3.download_file(bucket, t.filename, t.filename)
+                        print("after download")
                         subprocess.Popen(command, shell=True)
                         s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
                                           f'{folder}{t.filename[:-3]}{str(t.newformat)}')
@@ -63,5 +66,8 @@ class ConvertBySQS:
                         t.status = "PROCESSED"
                         session.commit()
                         print("Conversión realizada con exito")
+                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'),ReceiptHandle=msg['ReceiptHandle'])
                     except Exception as e:
+                        print(e)
+                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'),ReceiptHandle=msg['ReceiptHandle'])
                         continue
