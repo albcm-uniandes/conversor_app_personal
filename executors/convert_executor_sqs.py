@@ -17,6 +17,7 @@ dbname = os.environ['RDS_DATABASE']
 folder = os.environ['PROCESS_FOLDER']
 bucket = os.environ['BUCKET']
 s3 = boto3.resource("s3")
+_s3 = boto3.client("s3")
 sqs = boto3.client('sqs', region_name='us-east-1')
 engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
@@ -54,7 +55,7 @@ class ConvertBySQS:
                         print(t.filename)
                         command = f'ffmpeg -i {folder}' + str(t.filename) + \
                               f' {folder}' + t.filename[:-3] + str(t.newformat)
-                        s3.download_file(bucket, t.filename, t.filename)
+                        _s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
                         subprocess.Popen(command, shell=True)
                         s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
