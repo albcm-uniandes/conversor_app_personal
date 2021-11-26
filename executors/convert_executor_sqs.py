@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
@@ -37,9 +38,11 @@ class ConvertBySQS:
 
     if __name__ == "__main__":
         while True:
+            time.sleep(5)
             messages = sqs.receive_message(QueueUrl=os.environ.get('QUEUE_URL'))
             print(messages)
-            if messages:
+            print(len(messages))
+            if len(messages)>1:
                 for msg in messages['Messages']:
                     print(msg)
                     msg_body = msg['Body']
