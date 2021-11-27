@@ -43,7 +43,7 @@ class ConvertBySQS:
             messages = sqs.receive_message(QueueUrl=os.environ.get('QUEUE_URL'))
             print(messages)
             print(len(messages))
-            if len(messages)>1:
+            if len(messages) > 1:
                 for msg in messages['Messages']:
                     print(msg)
                     msg_body = msg['Body']
@@ -53,22 +53,22 @@ class ConvertBySQS:
                     print(f'The message body: {msg_body}')
                     try:
                         print(t.filename)
-                        command = f'ffmpeg -i {folder}' + str(t.filename) + \
-                              f' {folder}' + t.filename[:-3] + str(t.newformat)
+                        command = f'ffmpeg -i ' + str(t.filename) + \
+                                  t.filename[:-3] + str(t.newformat)
                         _s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
                         subprocess.Popen(command, shell=True)
-                        s3.upload_fileobj(f'{folder}{t.filename[:-3]}{str(t.newformat)}', bucket,
-                                          f'{folder}{t.filename[:-3]}{str(t.newformat)}')
-                        if os.path.exists(folder + t.filename) and os.path.exists(
-                                f'{folder}{t.filename[:-3]}{str(t.newformat)}'):
-                            os.remove(folder + t.filename)
-                            os.remove(f'{folder}{t.filename[:-3]}{str(t.newformat)}')
+                        s3.upload_fileobj(f'{t.filename[:-3]}{str(t.newformat)}', bucket,
+                                          f'{t.filename[:-3]}{str(t.newformat)}')
+                        if os.path.exists(t.filename) and os.path.exists(
+                                f'{t.filename[:-3]}{str(t.newformat)}'):
+                            os.remove(t.filename)
+                            os.remove(f'{t.filename[:-3]}{str(t.newformat)}')
                         t.status = "PROCESSED"
                         session.commit()
                         print("Conversión realizada con exito")
-                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'),ReceiptHandle=msg['ReceiptHandle'])
+                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'), ReceiptHandle=msg['ReceiptHandle'])
                     except Exception as e:
                         print(e)
-                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'),ReceiptHandle=msg['ReceiptHandle'])
+                        sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'), ReceiptHandle=msg['ReceiptHandle'])
                         continue
