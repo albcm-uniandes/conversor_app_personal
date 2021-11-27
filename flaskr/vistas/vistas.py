@@ -23,10 +23,6 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
-# Get the queue
-queue = sqs.get_queue_by_name(QueueName='ColaFIFO.fifo')
-
-
 class VistaRegistro(Resource):
     def post(self):
         contrasena1 = request.json["password1"]
