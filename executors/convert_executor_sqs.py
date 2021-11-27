@@ -53,13 +53,15 @@ class ConvertBySQS:
                     print(f'The message body: {msg_body}')
                     try:
                         print(t.filename)
-                        command = f'ffmpeg -i ' + str(t.filename) + \
+                        command = f'ffmpeg -i ' + str(t.filename) + ' ' + \
                                   t.filename[:-3] + str(t.newformat)
+                        print(command)
+                        print(t.newformat)
                         _s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
                         subprocess.Popen(command, shell=True)
                         s3.meta.client.upload_file(f'{t.filename[:-3]}{str(t.newformat)}', bucket,
-                                          f'{t.filename[:-3]}{str(t.newformat)}')
+                                                   f'{t.filename[:-3]}{str(t.newformat)}')
                         if os.path.exists(t.filename) and os.path.exists(
                                 f'{t.filename[:-3]}{str(t.newformat)}'):
                             os.remove(t.filename)
