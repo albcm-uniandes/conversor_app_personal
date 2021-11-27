@@ -59,7 +59,7 @@ class ConvertBySQS:
                         print(t.newformat)
                         _s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
-                        subprocess.Popen(command, shell=True)
+                        subprocess.call(command, shell=True)
                         print("subir archivo")
                         with open(f'{t.filename[:-3]}{str(t.newformat)}', 'rb') as data:
                             _s3.upload_fileobj(data, bucket, f'{t.filename[:-3]}{str(t.newformat)}')
