@@ -17,7 +17,7 @@ s3 = boto3.resource("s3")
 _s3 = boto3.client('s3')
 bucket = os.environ['BUCKET']
 # Get the service resource
-sqs = boto3.resource('sqs', region_name='us-east-1')
+sqs = boto3.client('sqs', region_name='us-east-1')
 # logger config
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
