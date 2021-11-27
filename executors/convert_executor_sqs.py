@@ -60,10 +60,12 @@ class ConvertBySQS:
                         _s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
                         subprocess.Popen(command, shell=True)
-                        s3.meta.client.upload_file(f'{t.filename[:-3]}{str(t.newformat)}', bucket,
-                                                   f'{t.filename[:-3]}{str(t.newformat)}')
+                        print("subir archivo")
+                        with open(f'{t.filename[:-3]}{str(t.newformat)}', 'rb') as data:
+                            _s3.upload_fileobj(data, bucket, f'{t.filename[:-3]}{str(t.newformat)}')
                         if os.path.exists(t.filename) and os.path.exists(
                                 f'{t.filename[:-3]}{str(t.newformat)}'):
+                            print("Eliminando archivos")
                             os.remove(t.filename)
                             os.remove(f'{t.filename[:-3]}{str(t.newformat)}')
                         t.status = "PROCESSED"
