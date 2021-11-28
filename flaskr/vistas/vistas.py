@@ -1,4 +1,5 @@
 import json
+import random
 
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -22,6 +23,7 @@ sqs = boto3.client('sqs', region_name='us-east-1')
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s: %(levelname)s: %(message)s')
+
 
 class VistaRegistro(Resource):
     def post(self):
@@ -78,7 +80,8 @@ class VistaTareas(Resource):
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
             sqs.send_message(QueueUrl=os.environ.get('QUEUE_URL'),
-                             MessageBody=str(nueva_tarea.id), MessageGroupId='1', MessageDeduplicationId='1')
+                             MessageBody=str(nueva_tarea.id), MessageGroupId='1',
+                             MessageDeduplicationId=str(random.randint(0, 100)))
 
             logger.info('Message sent')
             return data, 200
