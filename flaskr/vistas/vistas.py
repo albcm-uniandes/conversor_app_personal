@@ -80,7 +80,7 @@ class VistaTareas(Resource):
             db.session.commit()
             data = {'estado': 'La tarea se creo'}
             sqs.send_message(QueueUrl=os.environ.get('QUEUE_URL'),
-                             MessageBody=str(nueva_tarea.id), MessageGroupId='1',
+                             MessageBody=str(nueva_tarea.id), MessageGroupId=str(random.randint(0, 100)),
                              MessageDeduplicationId=str(random.randint(0, 100)))
 
             logger.info('Message sent')
