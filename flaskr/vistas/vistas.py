@@ -15,10 +15,14 @@ import logging
 from botocore.exceptions import ClientError
 
 s3 = boto3.resource("s3")
-_s3 = boto3.client('s3')
+_s3 = boto3.client('s3', aws_access_key_id=os.environ['aws_access_key_id'],
+                   aws_secret_access_key=os.environ['aws_secret_access_key'],
+                   aws_session_token=os.environ['aws_session_token'])
 bucket = os.environ['BUCKET']
 # Get the service resource
-sqs = boto3.client('sqs', region_name='us-east-1')
+sqs = boto3.client('sqs', region_name='us-east-1', aws_access_key_id=os.environ['aws_access_key_id'],
+                   aws_secret_access_key=os.environ['aws_secret_access_key'],
+                   aws_session_token=os.environ['aws_session_token'])
 # logger config
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,

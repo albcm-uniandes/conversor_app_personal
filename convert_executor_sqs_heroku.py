@@ -15,9 +15,12 @@ user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
 dbname = os.environ['RDS_DATABASE']
 bucket = os.environ['BUCKET']
-s3 = boto3.resource("s3")
-_s3 = boto3.client("s3")
-sqs = boto3.client('sqs', region_name='us-east-1')
+s3 = boto3.client("s3", aws_access_key_id=os.environ['aws_access_key_id'],
+                  aws_secret_access_key=os.environ['aws_secret_access_key'],
+                  aws_session_token=os.environ['aws_session_token'])
+sqs = boto3.client('sqs', region_name='us-east-1', aws_access_key_id=os.environ['aws_access_key_id'],
+                   aws_secret_access_key=os.environ['aws_secret_access_key'],
+                   aws_session_token=os.environ['aws_session_token'])
 engine = create_engine(f'postgresql://{user}:{password}@{hostname}/{dbname}')
 connection = engine.connect()
 session = Session(bind=connection)  # create a Session
@@ -55,12 +58,12 @@ class ConvertBySQS:
                                   t.filename[:-3] + str(t.newformat)
                         print(command)
                         print(t.newformat)
-                        _s3.download_file(bucket, t.filename, t.filename)
+                        s3.download_file(bucket, t.filename, t.filename)
                         print("after download")
                         subprocess.call(command, shell=True)
                         print("subir archivo")
                         with open(f'{t.filename[:-3]}{str(t.newformat)}', 'rb') as data:
-                            _s3.upload_fileobj(data, bucket, f'{t.filename[:-3]}{str(t.newformat)}')
+                            s3.upload_fileobj(data, bucket, f'{t.filename[:-3]}{str(t.newformat)}')
                         if os.path.exists(t.filename) and os.path.exists(
                                 f'{t.filename[:-3]}{str(t.newformat)}'):
                             print("Eliminando archivos")
