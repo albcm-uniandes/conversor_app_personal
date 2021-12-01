@@ -1,1 +1,1 @@
-worker: python convert_executor_sqs.py
+worker: python executors/convert_executor_sqs.py
