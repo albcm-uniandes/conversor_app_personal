@@ -6,10 +6,14 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import time
+import sendgrid
+from sendgrid.helpers.mail import Email, Mail, To, Content
+from flaskr.modelos import Tarea, Usuario
 
 load_dotenv()
 
 db = SQLAlchemy()
+sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
 hostname = os.environ['RDS_HOST']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
@@ -26,17 +30,27 @@ connection = engine.connect()
 session = Session(bind=connection)  # create a Session
 
 
-class Tarea(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(128))
-    newformat = db.Column(db.String(128))
-    status = db.Column(db.String(128))
-    timestamp = db.Column(db.DateTime)
-
-
 class ConvertBySQS:
-    def get_task(id) -> [Tarea]:
+    @staticmethod
+    def send_email(to: str, message: str):
+        from_email = Email("test@example.com")
+        to_email = To(to)
+        subject = "Notificación de archivo"
+        content = Content("text/plain", message)
+        mail = Mail(from_email, to_email, subject, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+        return response
+
+    @staticmethod
+    def get_task(id) -> Tarea:
         return session.query(Tarea).filter(Tarea.id == id).first()
+
+    @staticmethod
+    def get_user(id) -> Usuario:
+        return session.query(Usuario).filter(Usuario.id == id).first()
 
     if __name__ == "__main__":
         while True:
@@ -72,8 +86,10 @@ class ConvertBySQS:
                         t.status = "PROCESSED"
                         session.commit()
                         print("Conversión realizada con exito")
+                        send_email(get_user(t.usuario_id).correo, "Tu archivo esta listo para descargar")
                         sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'), ReceiptHandle=msg['ReceiptHandle'])
                     except Exception as e:
+                        # send_email(get_user(t.usuario_id).correo, "Tu archivo fallo en procesar")
                         print(e)
                         sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'), ReceiptHandle=msg['ReceiptHandle'])
                         continue
