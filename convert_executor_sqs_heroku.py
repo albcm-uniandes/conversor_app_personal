@@ -14,7 +14,6 @@ hostname = os.environ['RDS_HOST']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
 dbname = os.environ['RDS_DATABASE']
-folder = os.environ['PROCESS_FOLDER']
 bucket = os.environ['BUCKET']
 s3 = boto3.resource("s3")
 _s3 = boto3.client("s3")
