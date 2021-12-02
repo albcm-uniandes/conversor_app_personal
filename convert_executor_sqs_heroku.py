@@ -86,7 +86,6 @@ class ConvertBySQS:
                         t.status = "PROCESSED"
                         session.commit()
                         print("Conversión realizada con exito")
-                        send_email(get_user(t.usuario_id).correo, "Tu archivo esta listo para descargar")
                         sqs.delete_message(QueueUrl=os.environ.get('QUEUE_URL'), ReceiptHandle=msg['ReceiptHandle'])
                     except Exception as e:
                         # send_email(get_user(t.usuario_id).correo, "Tu archivo fallo en procesar")
