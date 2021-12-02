@@ -44,11 +44,9 @@ class ConvertBySQS:
         print(response.headers)
         return response
 
-    @staticmethod
     def get_task(id) -> Tarea:
         return session.query(Tarea).filter(Tarea.id == id).first()
 
-    @staticmethod
     def get_user(id) -> Usuario:
         return session.query(Usuario).filter(Usuario.id == id).first()
 
